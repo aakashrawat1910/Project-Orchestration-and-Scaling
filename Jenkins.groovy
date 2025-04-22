@@ -4,8 +4,8 @@ pipeline {
     environment {
         GIT_URL = 'https://github.com/aakashrawat1910/Project-Orchestration-and-Scaling.git'
         GIT_BRANCH = 'main'
-        AWS_ACCESS_KEY_ID = 'AKIA6GBMCU7ZMXDQYE2R' // AWS Access Key ID stored in Jenkins
-        AWS_SECRET_ACCESS_KEY = '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' // AWS Secret Access Key stored in Jenkins
+        AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID' // AWS Access Key ID stored in Jenkins
+        AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY' // AWS Secret Access Key stored in Jenkins
         AWS_REGION = 'us-west-1' // AWS region where the cluster is located
         
     }
