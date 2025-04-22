@@ -1,0 +1,16 @@
+services:
+  helloservice:    
+    build: 
+      context: ./helloservice
+      dockerfile: Dockerfile
+    image: 975050024946.dkr.ecr.us-west-1.amazonaws.com/aakash/project-orc-b:hello-latest
+    ports:
+    - "3001:3001"
+    
+  profileservice:    
+    build: 
+      context: ./profileservice
+      dockerfile: Dockerfile
+    image: 975050024946.dkr.ecr.us-west-1.amazonaws.com/aakash/project-orc-b:profile-latest
+    ports:
+    - "3002:3002"
