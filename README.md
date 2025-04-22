@@ -1,7 +1,3 @@
-Here's a comprehensive `README.md` for your **Project on Orchestration and Scaling using MERN with Microservices**, designed to be detailed yet beginner-friendly.
-
----
-
 # 🧱 MERN Microservices Orchestration & Scaling Project
 
 This project demonstrates how to build, containerize, orchestrate, and scale a MERN stack microservices application using **Docker**, **AWS (ECS/EC2/EKS)**, **Boto3**, **Jenkins**, and **ChatOps**.
