@@ -1,181 +1,205 @@
 # 🧱 MERN Microservices Orchestration & Scaling Project
 
-This project demonstrates how to build, containerize, orchestrate, and scale a MERN stack microservices application using **Docker**, **AWS (ECS/EC2/EKS)**, **Boto3**, **Jenkins**, and **ChatOps**.
+This project demonstrates how to build, containerize, orchestrate, and scale a MERN stack microservices application using **Docker**, **AWS (EC2/ECR/EKS)**, **Python (Boto3)**, **Jenkins**, and **ChatOps**.
+
+---
 
 ## 📁 Project Structure
 
 ```
 Project-Orchestration-and-Scaling/
 ├── backend/
-│   ├── helloservice/         # Microservice 1
-│   │   ├── Dockerfile
-│   │   ├── index.js
-│   │   └── package.json
-│   ├── profileservice/       # Microservice 2
-│   │   ├── Dockerfile
-│   │   ├── index.js
-│   │   └── package.json
+│   ├── helloservice/
+│   ├── profileservice/
 │   └── docker-compose.yml
-├── frontend/                 # React frontend
-│   ├── Dockerfile
-│   ├── package.json
-│   └── public/, src/
-├── boto3-automation/
-│   ├── boto3-iac-script.py                # IaC using Boto3
-│   ├── complete-deployment-script.py     # Full automation with Boto3
-│   └── lambda-backup-script.py           # Lambda script for DB backups
-├── Jenkins.groovy            # Jenkins CI/CD Pipeline script
-├── README.md                 # 📄 You are here!
+├── frontend/
+├── boto3-iac-script.py
+├── complete-deployment-script.py
+├── lambda-backup-script.py
+├── Jenkins.groovy
+└── README.md
 ```
 
 ---
 
 ## 🧠 Architecture Overview
 
-### 📌 Architecture Diagram
-![Architecture Diagram](ea57fffa-6cda-4942-a4e5-99aac6b02d92.png)
+### 🗂 Architecture Flow
+1. **Frontend** in React → Hosted on EC2
+2. **Two Backend Microservices**:
+   - `helloservice`
+   - `profileservice`
+   → Hosted on EC2/Auto Scaling Group
+3. **Dockerized & Stored in ECR**
+4. **CI/CD** with Jenkins (GitHub → Jenkins → Docker/ECR → Deploy via Boto3)
+5. **ELB** handles routing
+6. **CloudWatch** logs and monitors everything
+7. **S3** + Lambda for DB backups
+8. **SNS + Slack** for ChatOps notifications
 
-### 🛠 Components Used
+✅ Architecture Diagram
 
-- **Frontend**: React
-- **Backend Microservices**: Node.js (helloservice, profileservice)
-- **Containerization**: Docker
-- **Orchestration**: Docker Compose → ECS/EKS
-- **Automation & IaC**: Python Boto3 Scripts
-- **CI/CD**: Jenkins (on EC2)
-- **Monitoring**: AWS CloudWatch
-- **Notification**: SNS + Lambda + Slack (ChatOps)
-- **Storage**: S3
-- **Load Balancing**: AWS ELB
+![Architecture](https://github.com/user-attachments/assets/111f5b27-e267-41fd-b867-fb527b098018)
 
 ---
 
-## 🧪 Run Locally
+## 🏁 Quick Start – Local Setup
 
-### 1. Clone Repo
+### 1. Clone Repository
 ```bash
 git clone https://github.com/aakashrawat1910/Project-Orchestration-and-Scaling.git
 cd Project-Orchestration-and-Scaling
 ```
 
-### 2. Start Containers Locally
+### 2. Run Backend Locally (with Docker)
 ```bash
 cd backend
 docker-compose up --build
 ```
 
+### 3. Run Frontend Locally
+```bash
+cd frontend
+npm install
+npm start
+```
+
 ---
 
-## 🪄 Deployment Steps
+## ☁️ AWS Setup
 
-### 🔧 Step 1: Set Up AWS
-
-- Install and configure AWS CLI:
+### Configure AWS CLI:
 ```bash
 aws configure
+# Add your AWS Access Key, Secret, Region
 ```
 
-- Install required Python packages:
+---
+
+## 🐳 Docker & ECR Commands
+
+### 1. Authenticate Docker to ECR:
 ```bash
-pip install boto3
+aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin <your-aws-id>.dkr.ecr.us-west-1.amazonaws.com
 ```
 
----
-
-### 🐳 Step 2: Containerize App
-
-Each microservice and frontend has its own Dockerfile. Use:
+### 2. Build & Push Images
 ```bash
-docker-compose build
+# Backend
+docker build -t helloservice ./backend/helloservice
+docker tag helloservice:latest <ECR_REPO_URL>/helloservice
+docker push <ECR_REPO_URL>/helloservice
+
+docker build -t profileservice ./backend/profileservice
+docker tag profileservice:latest <ECR_REPO_URL>/profileservice
+docker push <ECR_REPO_URL>/profileservice
+
+# Frontend
+docker build -t frontend ./frontend
+docker tag frontend:latest <ECR_REPO_URL>/frontend
+docker push <ECR_REPO_URL>/frontend
 ```
 
 ---
 
-### 📦 Step 3: Push to Amazon ECR
+## 🤖 Jenkins Setup (CI/CD)
 
+### Jenkins URL:
+📍 http://3.111.188.91:8080  
+👤 Username: `herovired`  
+🔐 Password: `herovired`
+
+### Jenkins Groovy Pipeline (`Jenkins.groovy`)
+- Clones repo
+- Builds Docker image
+- Pushes to ECR
+- Triggers Boto3 deployment
+
+> 💡 **Add Webhook to GitHub Repo** to auto-trigger builds
+
+---
+
+## 🧾 Infrastructure via Boto3
+
+### 1. Set Up Infra
 ```bash
-aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin <ECR_URL>
-
-docker build -t aakash/project-orc .
-docker tag aakash/project-orc:latest <ECR_URL>/aakash/project-orc:latest
-docker push <ECR_URL>/aakash/project-orc:latest
+python boto3-iac-script.py
 ```
 
----
+Creates:
+- VPC
+- Subnets
+- Security Groups
+- Launch Configuration
+- Auto Scaling Group
+- ELB
 
-### 🤖 Step 4: Setup Jenkins on EC2
+### 2. Full Deployment
+```bash
+python complete-deployment-script.py
+```
 
-- Access Jenkins: [http://3.111.188.91:8080](http://3.111.188.91:8080)
-  - Username: `herovired`
-  - Password: `herovired`
-
-- Jenkins job executes `Jenkins.groovy`:
-  - Builds Docker images
-  - Pushes to ECR
-  - Triggers Boto3 deployment
-
----
-
-### ☁️ Step 5: Infrastructure as Code (Boto3)
-
-Use:
-- `boto3-iac-script.py` – Creates VPC, subnets, ASG, ELB.
-- `complete-deployment-script.py` – Automates full stack deployment.
-- `lambda-backup-script.py` – Creates a Lambda to backup DB to S3 with timestamp.
+Deploys everything: infra + Docker containers
 
 ---
 
-### 🚀 Step 6: Deployment Strategy
+## ☁️ AWS Lambda (Backups)
 
-- Backend: EC2 via Auto Scaling Group
-- Frontend: EC2 instance
-- Load Balancer setup (ELB)
-- DNS via Route 53
+### Backup Script
+```bash
+python lambda-backup-script.py
+```
+
+- Automates Lambda creation for DB backup
+- Stores in S3 with timestamp
+- Schedule with CloudWatch Events
 
 ---
 
-### ☸️ Step 10: Kubernetes (Optional)
+## 🛰 Kubernetes (EKS - Optional)
 
-Use Helm + `eksctl`:
+### Create EKS Cluster:
 ```bash
 eksctl create cluster --name mern-cluster --region us-west-1
-helm install mern-chart ./chart/
+```
+
+### Deploy with Helm:
+```bash
+helm install mern-app ./chart/
 ```
 
 ---
 
-### 📈 Step 11: Monitoring & Logging
+## 🔔 ChatOps Setup
 
-- Use **CloudWatch** for metrics & logs.
-- Set alarms for failures or high CPU.
-
----
-
-### 💬 Step 14: ChatOps Integration
-
-1. **SNS**: Create topics (success/failure).
-2. **Lambda**: Trigger notifications based on events.
-3. **Slack/Teams**: Integrate SNS with messaging platforms.
-4. **SES**: For email alerts.
+1. **Create SNS Topics** (e.g., `deployment-success`, `deployment-failure`)
+2. **Lambda Function** reads deployment logs → sends to SNS
+3. **Slack Integration**: Use webhook URLs to push SNS alerts to Slack or Teams
 
 ---
 
-## 🧪 Final Check
+## 📊 Monitoring & Logging
 
-- Ensure containers are up.
-- Validate frontend is reachable.
-- Test endpoints of each microservice.
-
----
-
-## 🔗 Useful Links
-
-- GitHub: [SampleMERNwithMicroservices](https://github.com/UnpredictablePrashant/SampleMERNwithMicroservices)
-- Fork Instructions: [How to pull changes from original repo](https://stackoverflow.com/questions/3903817/pull-new-updates-from-original-github-repository-into-forked-github-repository)
+- Enable **CloudWatch Alarms** for:
+  - CPU > 80%
+  - Memory spike
+- Enable **CloudWatch Logs** for:
+  - EC2 logs
+  - Lambda logs
 
 ---
 
-## 🤝 Contributing
+## ✅ Final Testing
 
-If you're learning DevOps and MERN, this repo is for you! Fork, experiment, break things, and rebuild. That's the spirit!
+- `curl <LoadBalancerDNS>/hello`
+- Open React frontend → confirm data loads
+- Check Jenkins job results
+- Check S3 for Lambda backup logs
 
+---
+
+## 💡 Useful Links
+
+- [How to Pull Changes from Forked Repo](https://stackoverflow.com/questions/3903817/pull-new-updates-from-original-github-repository-into-forked-github-repository)
+- [Amazon EKS Docs](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+- [Helm Charts Guide](https://helm.sh/docs/intro/using_helm/)
