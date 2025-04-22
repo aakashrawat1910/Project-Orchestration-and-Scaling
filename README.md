@@ -179,6 +179,3 @@ helm install mern-chart ./chart/
 
 If you're learning DevOps and MERN, this repo is for you! Fork, experiment, break things, and rebuild. That's the spirit!
 
----
-
-Would you like this README written directly to your project directory, or want it converted to a PDF/Markdown export too?
