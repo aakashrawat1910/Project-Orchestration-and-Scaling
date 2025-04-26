@@ -105,9 +105,9 @@ docker push <ECR_REPO_URL>/frontend
 ## 🤖 Jenkins Setup (CI/CD)
 
 ### Jenkins URL:
-📍 http://3.111.188.91:8080  
-👤 Username: `herovired`  
-🔐 Password: `herovired`
+📍 http://jekins:8080  
+👤 Username: `username`  
+🔐 Password: `password`
 
 ### Jenkins Groovy Pipeline (`Jenkins.groovy`)
 - Clones repo
